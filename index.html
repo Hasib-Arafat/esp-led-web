@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ESP LED Control</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align:center; margin-top:50px; }
+    button { padding: 15px 30px; font-size:18px; margin:10px; cursor:pointer; }
+    #status { font-size:20px; margin-top:20px; }
+  </style>
+  <!-- Firebase SDKs (compat build for simple web usage) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+</head>
+<body>
+  <h1>ESP8266 LED Control</h1>
+  <button onclick="ledOn()">Turn ON</button>
+  <button onclick="ledOff()">Turn OFF</button>
+  <div id="status">LED Status: OFF</div>
+
+  <script>
+    // 🔧 Replace the placeholder values below with your Firebase project's config
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "esp-led-demo-7797b.firebaseapp.com",
+      databaseURL: "https://esp-led-demo-7797b-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "esp-led-demo-7797b",
+      storageBucket: "esp-led-demo-7797b.appspot.com",
+      messagingSenderId: "SENDER_ID",
+      appId: "APP_ID"
+    };
+
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // Functions to turn LED ON/OFF (writes to the Realtime Database key `led`)
+    function ledOn() {
+      db.ref("led").set(1);
+      document.getElementById("status").innerText = "LED Status: ON";
+    }
+
+    function ledOff() {
+      db.ref("led").set(0);
+      document.getElementById("status").innerText = "LED Status: OFF";
+    }
+
+    // Listen to LED changes from Firebase (ESP or other user updates)
+    db.ref("led").on("value", (snapshot) => {
+      const val = snapshot.val();
+      document.getElementById("status").innerText = "LED Status: " + (val ? "ON" : "OFF");
+    });
+  </script>
+</body>
+</html>
