@@ -1,26 +1,96 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ESP LED Control</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ESP8266 LED Control</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: Arial, sans-serif; text-align:center; margin-top:50px; }
-    button { padding: 15px 30px; font-size:18px; margin:10px; cursor:pointer; }
-    #status { font-size:20px; margin-top:20px; }
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: #f0f4f8;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 30px;
+      text-shadow: 1px 1px #fff;
+    }
+
+    .card {
+      background: #fff;
+      padding: 40px 60px;
+      border-radius: 15px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    button {
+      padding: 15px 40px;
+      margin: 10px;
+      font-size: 18px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: bold;
+    }
+
+    button#on {
+      background: #4CAF50;
+      color: white;
+    }
+
+    button#on:hover {
+      background: #45a049;
+    }
+
+    button#off {
+      background: #f44336;
+      color: white;
+    }
+
+    button#off:hover {
+      background: #da190b;
+    }
+
+    #status {
+      margin-top: 25px;
+      font-size: 20px;
+      font-weight: bold;
+      color: #555;
+    }
+
+    @media(max-width: 500px){
+      .card {
+        padding: 20px 30px;
+      }
+
+      button {
+        width: 120px;
+      }
+    }
   </style>
-  <!-- Firebase SDKs (compat build for simple web usage) -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 </head>
 <body>
-  <h1>ESP8266 LED Control</h1>
-  <button onclick="ledOn()">Turn ON</button>
-  <button onclick="ledOff()">Turn OFF</button>
-  <div id="status">LED Status: OFF</div>
+  <div class="card">
+    <h1>ESP8266 LED Control</h1>
+    <button id="on" onclick="ledOn()">Turn ON</button>
+    <button id="off" onclick="ledOff()">Turn OFF</button>
+    <div id="status">LED Status: OFF</div>
+  </div>
 
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
   <script>
-    // 🔧 Replace the placeholder values below with your Firebase project's config
     const firebaseConfig = {
       apiKey: "YOUR_API_KEY",
       authDomain: "esp-led-demo-7797b.firebaseapp.com",
@@ -31,11 +101,9 @@
       appId: "APP_ID"
     };
 
-    // Initialize Firebase
     const app = firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // Functions to turn LED ON/OFF (writes to the Realtime Database key `led`)
     function ledOn() {
       db.ref("led").set(1);
       document.getElementById("status").innerText = "LED Status: ON";
@@ -46,7 +114,6 @@
       document.getElementById("status").innerText = "LED Status: OFF";
     }
 
-    // Listen to LED changes from Firebase (ESP or other user updates)
     db.ref("led").on("value", (snapshot) => {
       const val = snapshot.val();
       document.getElementById("status").innerText = "LED Status: " + (val ? "ON" : "OFF");
